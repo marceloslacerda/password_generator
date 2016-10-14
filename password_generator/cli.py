@@ -80,22 +80,17 @@ def main():
     else:
         user = DEFAULT_USER
     logging.info('User, %s', user)
-
-    if arguments['list']:
-        list_pinfo(user)
-    elif arguments['get']:
-        print_password(user, get_hostname(arguments['--url']))
-    elif arguments['set']:
-        set_password(user, get_hostname(arguments['--url']),
-                     get_length(arguments['--length']),
-                     get_symbols(arguments['--symbols']))
-    elif arguments['rm']:
-        rm_pinfo(user, get_hostname(arguments['--url']))
-
-
-if __name__ == '__main__':
     try:
-        main()
+        if arguments['list']:
+            list_pinfo(user)
+        elif arguments['get']:
+            print_password(user, get_hostname(arguments['--url']))
+        elif arguments['set']:
+            set_password(user, get_hostname(arguments['--url']),
+                         get_length(arguments['--length']),
+                         get_symbols(arguments['--symbols']))
+        elif arguments['rm']:
+            rm_pinfo(user, get_hostname(arguments['--url']))
     except IOError as e:
         logging.error(str(e))
         exit(1)

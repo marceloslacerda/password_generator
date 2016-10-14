@@ -20,7 +20,7 @@ setup(
     url='https://github.com/marceloslacerda/password_generator',
     entry_points={
         'console_scripts': [
-            'password-generator = password_generator:main',
+            'password-generator = password_generator.cli:main',
         ],
       },
     packages=['password_generator'],
