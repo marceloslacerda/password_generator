@@ -81,5 +81,7 @@ database is retrieved and a derived password is known you would have plenty
 of time to change your master and all your passwords.
 
 [1] https://en.wikipedia.org/wiki/PBKDF2#Alternatives_to_PBKDF2
+
 [2] https://blog.codinghorror.com/speed-hashing/
+
 [3] https://en.bitcoin.it/wiki/Mining_hardware_comparison Password Generator
