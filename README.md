@@ -84,4 +84,4 @@ of time to change your master and all your passwords.
 
 [2] https://blog.codinghorror.com/speed-hashing/
 
-[3] https://en.bitcoin.it/wiki/Mining_hardware_comparison Password Generator
+[3] https://en.bitcoin.it/wiki/Mining_hardware_comparison
