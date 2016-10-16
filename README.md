@@ -7,22 +7,22 @@ when requested.
 
 ## Installation
 
-pip3 install --user git+https://github.com/marceloslacerda/yesno.git
-pip3 install --user git+https://github.com/marceloslacerda/password_generator.git
+    pip3 install --user git+https://github.com/marceloslacerda/yesno.git
+    pip3 install --user git+https://github.com/marceloslacerda/password_generator.git
 
 Please remember that by default pip will install the password-generator script
 on the directory $HOME/.local/bin, so it's advisable to add that directory to your shell initialization.
 
 If you use bash you can achieve that adding this line to your ~/.bashrc:
 
-PATH=$PATH:$HOME/.local/bin
+    PATH=$PATH:$HOME/.local/bin
 
 ## Usage
 
-password_generator get [--user=<usr>] [--url=<url>]
-password_generator set [--user=<usr>] [--url=<url>] [--length=<length>] [--symbols=<symbols>]
-password_generator list [--user=<usr>]
-password_generator rm [--user=<usr>] [--url=<url>]
+    password_generator get [--user=<usr>] [--url=<url>]
+    password_generator set [--user=<usr>] [--url=<url>] [--length=<length>] [--symbols=<symbols>]
+    password_generator list [--user=<usr>]
+    password_generator rm [--user=<usr>] [--url=<url>]
 
 ## Warning
 
