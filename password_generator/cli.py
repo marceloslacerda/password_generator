@@ -13,7 +13,9 @@ import docopt
 import getpass
 import logging
 import os
-import yesno
+import conz
+
+cn = conz.Console()
 
 from .password import (get_db, get_hostname, get_pinfo, get_pinfo_key,
                        store_pinfo, get_password, PassInfo)
@@ -53,14 +55,14 @@ def set_password(user, hostname, length, symbols):
     db = get_db()
     pinfo = get_pinfo(get_db(), user, hostname)
     if pinfo is not None:
-        if not yesno.input_until_bool('Password already exists, do you wish to continue'):
+        if not cn.yesno('Password already exists, do you wish to continue?'):
             exit(0)
     salt = os.urandom(32)
     pinfo = PassInfo(salt, length, symbols, user)
     pass_ = getpass.getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)
     print('Password: ', password)
-    if yesno.input_until_bool('Save password info'):
+    if cn.yesno('Save password info'):
         store_pinfo(db, hostname, user, pinfo)
 
 

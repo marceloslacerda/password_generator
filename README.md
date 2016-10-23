@@ -7,7 +7,6 @@ when requested.
 
 ## Installation
 
-    pip3 install --user git+https://github.com/marceloslacerda/yesno.git
     pip3 install --user git+https://github.com/marceloslacerda/password_generator.git
 
 Please remember that by default pip will install the password-generator script

@@ -11,7 +11,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='Password Generator',
+    name='password generator',
     version=__version__,
     description='A program that generates passwords and store their '
     'parameters locally.',
@@ -34,5 +34,5 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
       keywords='password encryption',
-    install_requires=['tldextract==2.0.1', 'docopt==0.6.2', 'yesno==0.0.0'],
+    install_requires=['tldextract==2.0.1', 'docopt==0.6.2', 'conz==0.5'],
 )
