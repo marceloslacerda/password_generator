@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'password-generator = password_generator.cli:main',
+            'upgrade-password-database = password_generator.upgrade_database:list_pinfo',
         ],
       },
     packages=['password_generator'],

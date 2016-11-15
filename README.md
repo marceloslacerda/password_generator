@@ -1,4 +1,4 @@
-#Password Generator
+# Password Generator
 
 This is a small utility for locally handling passwords without storing
 the key, the hash of the key or any similar information. Only the
@@ -10,7 +10,8 @@ when requested.
     pip3 install --user git+https://github.com/marceloslacerda/password_generator.git
 
 Please remember that by default pip will install the password-generator script
-on the directory $HOME/.local/bin, so it's advisable to add that directory to your shell initialization.
+on the directory $HOME/.local/bin, so it's advisable to add that directory to
+your shell initialization.
 
 If you use bash you can achieve that adding this line to your ~/.bashrc:
 
@@ -22,6 +23,28 @@ If you use bash you can achieve that adding this line to your ~/.bashrc:
     password_generator set [--user=<usr>] [--url=<url>] [--length=<length>] [--symbols=<symbols>]
     password_generator list [--user=<usr>]
     password_generator rm [--user=<usr>] [--url=<url>]
+
+## Upgrading the password database
+
+As of 0.1.0 password-generator will use a JSON file to store its
+database, if you have used this software prior 0.1.0 you will need to
+convert the old database to the new format. To accomplish that do:
+
+    upgrade-password-database ~/.pinfo > ~/.pinfo.json
+
+If some password entries cannot be converted, you will be informed of
+them and the upgrade script will ignore them.
+
+If for some reason all previous you are unable to convert any entry,
+it's possible that you are running into a bug that password-generator
+had with distutils. Try the following to upgrade your databae:
+
+	git clone https://github.com/marceloslacerda/password_generator
+	cd password_generator/password_generator
+	./upgrade_database.py ~/.pinfo > ~/.pinfo.json
+
+Your database should, then, be converted to the JSON format and you
+shouldn't need to run that script again.
 
 ## Warning
 

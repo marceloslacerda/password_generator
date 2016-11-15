@@ -17,53 +17,58 @@ import conz
 
 cn = conz.Console()
 
-from .password import (get_db, get_hostname, get_pinfo, get_pinfo_key,
-                       store_pinfo, get_password, PassInfo)
+from .password import *
 
 DEFAULT_USER = os.environ['USER']
 DEFAULT_LENGTH = 16
 
 
 def print_password(user, hostname):
-    pinfo = get_pinfo(get_db(), user, hostname)
-    if pinfo is None:
+    try:
+        pinfo = get_pinfo(get_db(), user, hostname)
+    except KeyError:
         print('Password not found')
-        return
+        exit(1)
     pass_ = getpass.getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)
     print('Password: ', password)
 
 
-def rm_pinfo(user, hostname):
-    db = get_db()
-    if get_pinfo(db, user, hostname):
-        del db[get_pinfo_key(user, hostname)]
-        logging.info('Removed password successfully')
-    else:
-        logging.error('No entry for user %s, hostname %s found.', user, hostname)
-        exit(1)
-
-
-def list_pinfo(user):
-    db = get_db()
-    for key in db:
-        if user in key:
-            print(key.split(user)[0])
-
-
 def set_password(user, hostname, length, symbols):
     db = get_db()
-    pinfo = get_pinfo(get_db(), user, hostname)
-    if pinfo is not None:
+    try:
+        pinfo = get_pinfo(get_db(), user, hostname)
         if not cn.yesno('Password already exists, do you wish to continue?'):
             exit(0)
+    except KeyError:
+        pass
     salt = os.urandom(32)
-    pinfo = PassInfo(salt, length, symbols, user)
+    pinfo = {
+        'salt': salt,
+        'length': length,
+        'symbols': symbols,
+        'hostname': hostname, # watch out, old databases didn't store hostname
+        'id': user
+    }
     pass_ = getpass.getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)
     print('Password: ', password)
     if cn.yesno('Save password info'):
         store_pinfo(db, hostname, user, pinfo)
+
+def rm_password(user, hostname):
+    db = get_db()
+    try:
+        rm_pinfo(db, user, hostname)
+        logging.info('Removed password successfully')
+    except KeyError:
+        print('Password not found')
+        exit(1)
+
+def list_hostnames(user):
+    db = get_db()
+    for host in list_pinfo(db, user):
+        print(host)
 
 
 def get_length(length):
@@ -84,7 +89,7 @@ def main():
     logging.info('User, %s', user)
     try:
         if arguments['list']:
-            list_pinfo(user)
+            list_hostnames(user)
         elif arguments['get']:
             print_password(user, get_hostname(arguments['--url']))
         elif arguments['set']:
@@ -92,7 +97,7 @@ def main():
                          get_length(arguments['--length']),
                          get_symbols(arguments['--symbols']))
         elif arguments['rm']:
-            rm_pinfo(user, get_hostname(arguments['--url']))
+            rm_password(user, get_hostname(arguments['--url']))
     except IOError as e:
         logging.error(str(e))
         exit(1)
