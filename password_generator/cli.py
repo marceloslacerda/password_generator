@@ -15,12 +15,13 @@ import logging
 import os
 import conz
 
-cn = conz.Console()
 
 from .password import *
+from . import __version__
 
 DEFAULT_USER = os.environ['USER']
 DEFAULT_LENGTH = 16
+cn = conz.Console()
 
 
 def print_password(user, hostname):
@@ -80,7 +81,10 @@ def get_symbols(symbols):
 
 
 def main():
-    arguments = docopt.docopt(__doc__, version='Password Generator 0.0.0')
+    arguments = docopt.docopt(
+        __doc__,
+        version='Password Generator ' + __version__
+    )
     logging.basicConfig(format='%(levelname)s: %(message)s', level='INFO')
     if arguments['--user']:
         user = arguments['--user']
