@@ -67,15 +67,6 @@ def get_db():
                       'permissions and try again.')
 
 
-def get_hostname(url):
-    if not url:
-        url = input('URL: ').strip()
-    o = tldextract.extract(url)
-    hostname = o.domain + '.' + o.suffix
-    logging.info('Hostname, %s', hostname)
-    return hostname
-
-
 def get_password(hostname, pass_, pinfo):
     msg = gen_msg(hostname, pass_, pinfo['id'])
     derived_key = hashlib.pbkdf2_hmac(ALGORITHM, msg, pinfo['salt'], PASSES)

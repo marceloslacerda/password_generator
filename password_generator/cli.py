@@ -3,10 +3,18 @@
 """Password Generator
 
 Usage:
-  password_generator get [--user=<usr>] [--url=<url>]
-  password_generator set [--user=<usr>] [--url=<url>] [--length=<length>] [--symbols=<symbols>]
-  password_generator list [--user=<usr>]
-  password_generator rm [--user=<usr>] [--url=<url>]
+  password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n]
+  password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>]
+  password_generator list [-U <usr> | --user=<usr>]
+  password_generator rm [-U --user=<usr>] [-u <url> | --url=<url>] [-n]
+
+
+Options:
+  -U <usr>, --user=<usr> The username associated with that password
+  -u <url>, --url=<url>  The url that uses that password. It will be stripped of subdomains and trailing parameters. Use -n to disable this behaviour
+  -n                     Use this when you want to use the url as it is
+  --length=<length>      The length of the password
+  --symbols=<symbols>    Extra symbols to be appended to the password
 """
 
 import docopt
@@ -80,28 +88,45 @@ def get_symbols(symbols):
     return '' if not symbols else symbols
 
 
+def get_hostname(url):
+    import tldextract # here because it can be slow to load
+    if not url:
+        url = input('URL: ').strip()
+    o = tldextract.extract(url)
+    hostname = o.domain + '.' + o.suffix
+    return hostname
+
+
 def main():
     arguments = docopt.docopt(
         __doc__,
         version='Password Generator ' + __version__
     )
     logging.basicConfig(format='%(levelname)s: %(message)s', level='INFO')
+
     if arguments['--user']:
         user = arguments['--user']
     else:
         user = DEFAULT_USER
+
+    if arguments['-n']:
+        hostname = arguments['--url']
+    else:
+        hostname = get_hostname(arguments['--url'])
+
     logging.info('User, %s', user)
+    logging.info('Hostname, %s', hostname)
     try:
         if arguments['list']:
             list_hostnames(user)
         elif arguments['get']:
-            print_password(user, get_hostname(arguments['--url']))
+            print_password(user, hostname)
         elif arguments['set']:
-            set_password(user, get_hostname(arguments['--url']),
+            set_password(user, hostname,
                          get_length(arguments['--length']),
                          get_symbols(arguments['--symbols']))
         elif arguments['rm']:
-            rm_password(user, get_hostname(arguments['--url']))
+            rm_password(user, hostname)
     except IOError as e:
         logging.error(str(e))
         exit(1)
