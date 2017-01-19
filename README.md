@@ -19,10 +19,22 @@ If you use bash you can achieve that adding this line to your ~/.bashrc:
 
 ## Usage
 
-    password_generator get [--user=<usr>] [--url=<url>]
-    password_generator set [--user=<usr>] [--url=<url>] [--length=<length>] [--symbols=<symbols>]
-    password_generator list [--user=<usr>]
-    password_generator rm [--user=<usr>] [--url=<url>]
+Password Generator
+
+Usage:
+
+    password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n]
+    password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>]
+    password_generator list [-U <usr> | --user=<usr>]
+    password_generator rm [-U --user=<usr>] [-u <url> | --url=<url>] [-n]
+
+
+    Options:
+      -U <usr>, --user=<usr> The username associated with that password
+      -u <url>, --url=<url>  The url that uses that password. It will be stripped of subdomains and trailing parameters. Use -n to disable this behaviour
+      -n                     Use this when you want to use the url as it is
+      --length=<length>      The length of the password
+      --symbols=<symbols>    Extra symbols to be appended to the password
 
 ## Upgrading the password database
 
