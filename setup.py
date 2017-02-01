@@ -35,5 +35,5 @@ setup(
         'Programming Language :: Python :: 3.4',
     ],
       keywords='password encryption',
-    install_requires=['tldextract==2.0.1', 'docopt==0.6.2', 'conz==0.5'],
+    install_requires=['tldextract==2.0.1', 'docopt==0.6.2', 'conz==0.5', 'pyperclip==1.5.27', 'python-daemon==2.1.2'],
 )

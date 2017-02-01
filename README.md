@@ -5,6 +5,11 @@ the key, the hash of the key or any similar information. Only the
 password metadata is stored and used to generate the actual password
 when requested.
 
+Since password-generator 1.0.0 the password is sent to the clipboard rather
+than stdout. After 10 seconds the password is removed from the clipboard.
+That function is only used if you have either xclip, xsel, the python-gtk
+library or the python-qt library.
+
 ## Installation
 
     pip3 install --user git+https://github.com/marceloslacerda/password_generator.git

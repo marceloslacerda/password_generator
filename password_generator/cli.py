@@ -22,6 +22,9 @@ import getpass
 import logging
 import os
 import conz
+import pyperclip
+import daemon
+import time
 
 
 from .password import *
@@ -29,6 +32,7 @@ from . import __version__
 
 DEFAULT_USER = os.environ['USER']
 DEFAULT_LENGTH = 16
+TIME_BEFORE_CLEAN = 10
 cn = conz.Console()
 
 
@@ -40,7 +44,22 @@ def print_password(user, hostname):
         exit(1)
     pass_ = getpass.getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)
-    print('Password: ', password)
+    try:
+        pyperclip.copy(password)
+        if len(password) > 10:
+            print('Password ' + password[:3] + '... copied to clipboard')
+        else:
+            print('Password ' + password[0] + '... copied to clipboard')
+        print('The password will be removed from'
+                  ' clipboard after {} seconds'.format(TIME_BEFORE_CLEAN))
+        with daemon.DaemonContext():
+            time.sleep(TIME_BEFORE_CLEAN)
+            if pyperclip.paste() == password:
+                pyperclip.copy('')
+    except pyperclip.exceptions.PyperclipException:
+        logging.warning('Could not copy to clipboard, please install either '
+                        'xclip or xsel to use that feature.')
+        print('Password: ', password)
 
 
 def set_password(user, hostname, length, symbols):
