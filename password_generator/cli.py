@@ -111,6 +111,8 @@ def main():
 
     if arguments['-n']:
         hostname = arguments['--url']
+    elif arguments['list']:
+        pass
     else:
         hostname = get_hostname(arguments['--url'])
 
