@@ -102,7 +102,7 @@ SHA passes needed to brute force your password would be the current number of
 passes(PASS) times the number of possible masters with a certain password
 length(LEN) using only characters in the English alphabet(ALPHA):
 
-    PASS*len(ALPHA)**LEN
+    ![Equation 1](https://github.com/marceloslacerda/password_generator/raw/master/equations/equation1.gif)
 
 Currently the number of passes that password-generator does is 150,000 and the
 size of the English alphabet is 26. Popular wisdom[2] says that we should
