@@ -104,9 +104,9 @@ secure. As of November 2016 AntMiner S9[3] is reported to be the fastest
 specialized SHA256 calculator commercially available. It can calculate
 14,000,000 million hashes per second. For that sort of machine it would take
 
-    1.4*10**22 / 14000000000 = 10**12 seconds
+    1.4*10**22 / 14000000000 = 10**9 seconds
 
-or approximately 32 thousand years to calculate all the hashes of 12 character
+or approximately 32 years to calculate all the hashes of 12 character
 passwords to discover our master password.
 
 Supposing that we wanted to have a rainbow table of all hashes we would need at
