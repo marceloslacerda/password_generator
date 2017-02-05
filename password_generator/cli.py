@@ -33,17 +33,11 @@ from . import __version__
 DEFAULT_USER = os.environ['USER']
 DEFAULT_LENGTH = 16
 TIME_BEFORE_CLEAN = 10
+MAX_VERSION = 1
 cn = conz.Console()
 
 
-def print_password(user, hostname):
-    try:
-        pinfo = get_pinfo(get_db(), user, hostname)
-    except KeyError:
-        print('Password not found')
-        exit(1)
-    pass_ = getpass.getpass('Master key: ')
-    password = get_password(hostname, pass_, pinfo)
+def print_password(password, callback=None):
     try:
         pyperclip.copy(password)
         if len(password) > 10:
@@ -51,7 +45,9 @@ def print_password(user, hostname):
         else:
             print('Password ' + password[0] + '... copied to clipboard')
         print('The password will be removed from'
-                  ' clipboard after {} seconds'.format(TIME_BEFORE_CLEAN))
+              ' clipboard after {} seconds'.format(TIME_BEFORE_CLEAN))
+        if callback is not None:
+            callback()
         with daemon.DaemonContext():
             time.sleep(TIME_BEFORE_CLEAN)
             if pyperclip.paste() == password:
@@ -60,7 +56,19 @@ def print_password(user, hostname):
         logging.warning('Could not copy to clipboard, please install either '
                         'xclip or xsel to use that feature.')
         print('Password: ', password)
+        if callback is not None:
+            callback()
 
+
+def print_password_cmd(user, hostname):
+    try:
+        pinfo = get_pinfo(get_db(), user, hostname)
+    except KeyError:
+        print('Password not found')
+        exit(1)
+    pass_ = getpass.getpass('Master key: ')
+    password = get_password(hostname, pass_, pinfo)
+    print_password(password)
 
 def set_password(user, hostname, length, symbols):
     db = get_db()
@@ -76,13 +84,15 @@ def set_password(user, hostname, length, symbols):
         'length': length,
         'symbols': symbols,
         'hostname': hostname, # watch out, old databases didn't store hostname
-        'id': user
+        'id': user,
+        'version': MAX_VERSION
     }
     pass_ = getpass.getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)
-    print('Password: ', password)
-    if cn.yesno('Save password info'):
-        store_pinfo(db, hostname, user, pinfo)
+    def save_password_callback():
+        if cn.yesno('Save password info'):
+            store_pinfo(db, hostname, user, pinfo)
+    print_password(password, save_password_callback)
 
 def rm_password(user, hostname):
     db = get_db()
@@ -107,13 +117,16 @@ def get_symbols(symbols):
     return '' if not symbols else symbols
 
 
-def get_hostname(url):
-    import tldextract # here because it can be slow to load
+def get_hostname(url, noextract):
     if not url:
         url = input('URL: ').strip()
-    o = tldextract.extract(url)
-    hostname = o.domain + '.' + o.suffix
-    return hostname
+    if not noextract:
+        import tldextract # here because it can be slow to load
+        o = tldextract.extract(url)
+        hostname = o.domain + '.' + o.suffix
+        return hostname
+    else:
+        return url
 
 
 def main():
@@ -128,20 +141,17 @@ def main():
     else:
         user = DEFAULT_USER
 
-    if arguments['-n']:
-        hostname = arguments['--url']
-    elif arguments['list']:
+    logging.info('User, %s', user)
+    if arguments['list']:
         pass
     else:
-        hostname = get_hostname(arguments['--url'])
-
-    logging.info('User, %s', user)
-    logging.info('Hostname, %s', hostname)
+        hostname = get_hostname(arguments['--url'], arguments['-n'])
+        logging.info('Hostname, %s', hostname)
     try:
         if arguments['list']:
             list_hostnames(user)
         elif arguments['get']:
-            print_password(user, hostname)
+            print_password_cmd(user, hostname)
         elif arguments['set']:
             set_password(user, hostname,
                          get_length(arguments['--length']),
