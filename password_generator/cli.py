@@ -3,8 +3,8 @@
 """Password Generator
 
 Usage:
-  password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>] --debug <password>
-  password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>] [--db <database>] --debug <password>
+  password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>] [--debug <password>]
+  password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>] [--db <database>] [--debug <password>]
   password_generator list [-U <usr> | --user=<usr>] [--db <database>]
   password_generator rm [-U --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>]
 
