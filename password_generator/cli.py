@@ -3,10 +3,10 @@
 """Password Generator
 
 Usage:
-  password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n]
-  password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>]
-  password_generator list [-U <usr> | --user=<usr>]
-  password_generator rm [-U --user=<usr>] [-u <url> | --url=<url>] [-n]
+  password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>]
+  password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>] [--db <database>]
+  password_generator list [-U <usr> | --user=<usr>] [--db <database>]
+  password_generator rm [-U --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>]
 
 
 Options:
@@ -15,6 +15,7 @@ Options:
   -n                     Use this when you want to use the url as it is
   --length=<length>      The length of the password
   --symbols=<symbols>    Extra symbols to be appended to the password
+  --db=<database>        Relative path to a json file with the password database
 """
 
 import docopt
@@ -60,9 +61,9 @@ def print_password(password, callback=None):
             callback()
 
 
-def print_password_cmd(user, hostname):
+def print_password_cmd(user, hostname, db_path):
     try:
-        pinfo = get_pinfo(get_db(), user, hostname)
+        pinfo = get_pinfo(get_db(db_path), user, hostname)
     except KeyError:
         print('Password not found')
         exit(1)
@@ -70,10 +71,10 @@ def print_password_cmd(user, hostname):
     password = get_password(hostname, pass_, pinfo)
     print_password(password)
 
-def set_password(user, hostname, length, symbols):
-    db = get_db()
+def set_password(user, hostname, length, symbols, db_path):
+    db = get_db(db_path)
     try:
-        pinfo = get_pinfo(get_db(), user, hostname)
+        pinfo = get_pinfo(db, user, hostname)
         if not cn.yesno('Password already exists, do you wish to continue?'):
             exit(0)
     except KeyError:
@@ -91,22 +92,26 @@ def set_password(user, hostname, length, symbols):
     password = get_password(hostname, pass_, pinfo)
     def save_password_callback():
         if cn.yesno('Save password info'):
-            store_pinfo(db, hostname, user, pinfo)
+            store_pinfo(db, hostname, user, pinfo, db_path)
     print_password(password, save_password_callback)
 
-def rm_password(user, hostname):
-    db = get_db()
+def rm_password(user, hostname, db_path):
+    db = get_db(db_path)
     try:
-        rm_pinfo(db, user, hostname)
+        rm_pinfo(db, user, hostname, db_path)
         logging.info('Removed password successfully')
     except KeyError:
         print('Password not found')
         exit(1)
 
-def list_hostnames(user):
-    db = get_db()
-    for host in list_pinfo(db, user):
-        print(host)
+def list_hostnames(user, db_path):
+    db = get_db(db_path)
+    pinfos = list_pinfo(db, user)
+    if len(pinfos) == 0:
+        print('No entries found in the database')
+    else:
+        for host in pinfos:
+            print(host)
 
 
 def get_length(length):
@@ -149,15 +154,17 @@ def main():
         logging.info('Hostname, %s', hostname)
     try:
         if arguments['list']:
-            list_hostnames(user)
+            list_hostnames(user, arguments['--db'])
         elif arguments['get']:
-            print_password_cmd(user, hostname)
+            print_password_cmd(user, hostname, arguments['--db'])
         elif arguments['set']:
             set_password(user, hostname,
                          get_length(arguments['--length']),
-                         get_symbols(arguments['--symbols']))
+                         get_symbols(arguments['--symbols']),
+                         arguments['--db']
+            )
         elif arguments['rm']:
-            rm_password(user, hostname)
+            rm_password(user, hostname, arguments['--db'])
     except IOError as e:
         logging.error(str(e))
         exit(1)

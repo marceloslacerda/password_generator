@@ -1,12 +1,9 @@
 import hashlib
 import itertools
-import logging
-import os.path
-import tldextract
 import json
 import base64
 import os
-import stat
+import os.path
 
 INFO_PATH = os.path.expanduser('~/.pinfo.json')
 ALGORITHM = 'sha256'
@@ -40,25 +37,27 @@ def get_pinfo(db, user, hostname):
     pinfo['salt'] = base64.b64decode(pinfo['salt'])
     return pinfo
 
-def rm_pinfo(db, user, hostname):
+def rm_pinfo(db, user, hostname, db_path):
     del db[get_pinfo_key(user, hostname)]
-    write_db(db)
+    write_db(db, db_path)
 
 
-def store_pinfo(db, hostname, user, pinfo):
+def store_pinfo(db, hostname, user, pinfo, db_path):
     pinfo['salt'] = base64.b64encode(pinfo['salt']).decode('utf-8')
     db[get_pinfo_key(user, hostname)] = pinfo
-    write_db(db)
+    write_db(db, db_path)
 
 
-def write_db(db):
-    with open(INFO_PATH, 'w', encoding='utf-8') as f:
+def write_db(db, db_path):
+    path = INFO_PATH if db_path is None else os.path.expanduser(db_path)
+    with open(path, 'w', encoding='utf-8') as f:
         json.dump(db, f)
-    
 
-def get_db():
+
+def get_db(db_path):
+    path = INFO_PATH if db_path is None else os.path.expanduser(db_path)
     try:
-        with open(INFO_PATH, 'r', encoding='utf-8') as f:
+        with open(path, 'r', encoding='utf-8') as f:
             return json.load(f)
     except FileNotFoundError:
         return dict()
