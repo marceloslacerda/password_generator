@@ -8,7 +8,18 @@ when requested.
 Since password-generator 1.0.0 the password is sent to the clipboard rather
 than stdout. After 10 seconds the password is removed from the clipboard.
 
+## Dependencies
 
+In order to function, password-generator needs
+
+* Python version ≥ 3.4
+* pip for python 3
+
+### How install the dependencies on debian jessie
+
+    # apt-get install python3 python3-pip
+
+    
 ## Installation
 
     $ pip3 install --user git+https://github.com/marceloslacerda/password_generator.git
