@@ -3,8 +3,8 @@
 """Password Generator
 
 Usage:
-  password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>]
-  password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>] [--db <database>]
+  password_generator get [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>] --debug <password>
+  password_generator set [-U <usr> | --user=<usr>] [-u <url> | --url=<url>] [-n] [--length=<length>] [--symbols=<symbols>] [--db <database>] --debug <password>
   password_generator list [-U <usr> | --user=<usr>] [--db <database>]
   password_generator rm [-U --user=<usr>] [-u <url> | --url=<url>] [-n] [--db <database>]
 
@@ -16,10 +16,10 @@ Options:
   --length=<length>      The length of the password
   --symbols=<symbols>    Extra symbols to be appended to the password
   --db=<database>        Relative path to a json file with the password database
+  --debug=<password>     Read the password from argument !!DO NOT USE!!
 """
 
 import docopt
-import getpass
 import logging
 import os
 import conz
@@ -27,6 +27,7 @@ import pyperclip
 import daemon
 import time
 
+from getpass import getpass
 
 from .password import *
 from . import __version__
@@ -36,10 +37,13 @@ DEFAULT_LENGTH = 16
 TIME_BEFORE_CLEAN = 10
 MAX_VERSION = 1
 cn = conz.Console()
+debug = False
 
 
 def print_password(password, callback=None):
     try:
+        if debug:
+            raise pyperclip.exceptions.PyperclipException()
         pyperclip.copy(password)
         if len(password) > 10:
             print('Password ' + password[:3] + '... copied to clipboard')
@@ -67,7 +71,7 @@ def print_password_cmd(user, hostname, db_path):
     except KeyError:
         print('Password not found')
         exit(1)
-    pass_ = getpass.getpass('Master key: ')
+    pass_ = getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)
     print_password(password)
 
@@ -88,7 +92,7 @@ def set_password(user, hostname, length, symbols, db_path):
         'id': user,
         'version': MAX_VERSION
     }
-    pass_ = getpass.getpass('Master key: ')
+    pass_ = getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)
     def save_password_callback():
         if cn.yesno('Save password info'):
@@ -145,6 +149,12 @@ def main():
         user = arguments['--user']
     else:
         user = DEFAULT_USER
+
+    if arguments['--debug']:
+        global getpass
+        getpass = lambda x: arguments['--debug']
+        global debug
+        debug = True
 
     logging.info('User, %s', user)
     if arguments['list']:

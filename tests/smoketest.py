@@ -8,12 +8,12 @@ def get_output(cmd_string):
 
 class TestCLIParser(unittest.TestCase):
     def test_listOne(self):
-        output = get_output("password-generator list --db foobar.json")
+        output = get_output("password-generator list --db foobar.json -U my-user")
         self.assertIn(
             "foo.bar",
             output)
     def test_listNone(self):
-        output = get_output("password-generator list --db notexists.json")
+        output = get_output("password-generator list --db notexists.json -U my-user")
         self.assertIn(
             "No entries",
             output)
