@@ -35,7 +35,6 @@ from . import __version__
 DEFAULT_USER = os.environ['USER']
 DEFAULT_LENGTH = 16
 TIME_BEFORE_CLEAN = 10
-MAX_VERSION = 1
 cn = conz.Console()
 debug = False
 
@@ -70,6 +69,10 @@ def print_password_cmd(user, hostname, db_path):
         pinfo = get_pinfo(get_db(db_path), user, hostname)
     except KeyError:
         print('Password not found')
+        exit(1)
+    except VersionError:
+        print('This pasword entry is more modern than this '
+              'software is able to process.')
         exit(1)
     pass_ = getpass('Master key: ')
     password = get_password(hostname, pass_, pinfo)

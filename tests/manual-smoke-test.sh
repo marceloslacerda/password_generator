@@ -24,4 +24,6 @@ echo "###Should remove the password###"
 password-generator rm --db barbaz.json -n -u bor.baz -U my-user
 echo "###Should show password not found###"
 password-generator get --db barbaz.json -n -u bor.baz -U my-user --debug 123
+echo "###Should show version not supported###"
+password-generator get --db highversion.json -n -u foo.bar -U my-user --debug 123
 rm barbaz.json

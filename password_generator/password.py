@@ -8,6 +8,7 @@ import os.path
 INFO_PATH = os.path.expanduser('~/.pinfo.json')
 ALGORITHM = 'sha256'
 PASSES = 150000
+MAX_VERSION = 1
 
 ALPHANUM = bytearray(itertools.chain(range(48, 58), range(65, 91),
                                      range(97, 123)))
@@ -16,7 +17,8 @@ ALPHANUM = bytearray(itertools.chain(range(48, 58), range(65, 91),
 def translate(bytes_array, length, symbols):
     table = ALPHANUM[:]
     table.extend(bytearray(symbols, 'utf-8'))
-    pass_ = str(bytes(ALPHANUM[b % len(ALPHANUM)] for b in bytes_array), 'utf-8')
+    pass_ = str(bytes(ALPHANUM[b % len(ALPHANUM)] for b in bytes_array),
+                'utf-8')
     return pass_[:length - len(symbols)] + symbols
 
 
@@ -35,6 +37,8 @@ def list_pinfo(db, user):
 def get_pinfo(db, user, hostname):
     pinfo = db[get_pinfo_key(user, hostname)]
     pinfo['salt'] = base64.b64decode(pinfo['salt'])
+    if pinfo.get('version', 0) > MAX_VERSION:
+        raise VersionError()
     return pinfo
 
 def rm_pinfo(db, user, hostname, db_path):
@@ -71,3 +75,6 @@ def get_password(hostname, pass_, pinfo):
     derived_key = hashlib.pbkdf2_hmac(ALGORITHM, msg, pinfo['salt'], PASSES)
     password = translate(derived_key, pinfo['length'], pinfo['symbols'])
     return password
+
+class VersionError(Exception):
+    pass
