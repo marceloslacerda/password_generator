@@ -14,10 +14,11 @@ In order to function, password-generator needs
 
 * Python version ≥ 3.4
 * pip for python 3
+* git
 
-### How install the dependencies on debian jessie
+### How install the dependencies on debian jessie/stretch
 
-    # apt-get install python3 python3-pip
+    # apt-get install python3 python3-pip git
 
     
 ## Installation
@@ -35,7 +36,7 @@ If you use bash you can achieve that adding this line to your ~/.bashrc:
 To have your password automatically copied to the clipboard you must have **either** xclip, xsel, the python-gtk
 library or the python-qt library installed.
 
-### On Debian Jessie
+### On Debian Jessie/stretch
 
 #### To install xclip
 
